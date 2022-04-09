@@ -1,20 +1,17 @@
-version: '2.1'
 
-orbs:
-  codecov: codecov/codecov@3.2.2
-  node: circleci/node@4.7.0
-
+version: 2.1
 
 jobs:
-  example-job:
+  say-hello:
     docker:
-      # replace with your preferred image
       - image: cimg/base:stable
     steps:
-      - codecov/upload:
-          token: '9e5adbcf-5a79-4db7-990a-0fcdd8f84ccd' 
+      - checkout
+      - run:
+          name: "Say hello"
+          command: "echo Hello, World!"
 
 workflows:
-  example-workflow:
+  say-hello-workflow:
     jobs:
-      - example-job
+      - say-hello
