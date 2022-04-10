@@ -1,17 +1,17 @@
 
 version: 2.1
-
+orbs:
+  node: circleci/node@5.0.2
 jobs:
-  say-hello:
-    docker:
-      - image: cimg/base:stable
+  build-and-test:
+    executor:
+      name: node/default
     steps:
       - checkout
+      - node/install-packages
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
-
+          command: npm run test
 workflows:
-  say-hello-workflow:
+  build-and-test:
     jobs:
-      - say-hello
+      - build-and-test
