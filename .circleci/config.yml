@@ -13,6 +13,8 @@ jobs:
       - run:
           name: "Run tests"
           command: npm run test
+      - store_test_results:
+      path: C:\Users\circleci\project\coverage\clover.xml
       - codecov/upload
 workflows:
   build-and-test:
