@@ -2,6 +2,7 @@
 version: 2.1
 orbs:
   node: circleci/node@5.0.2
+  codecov: codecov/codecov@3.2.2
 jobs:
   build-and-test:
     executor:
@@ -10,7 +11,9 @@ jobs:
       - checkout
       - node/install-packages
       - run:
+          name: "Run tests"
           command: npm run test
+      - codecov/upload
 workflows:
   build-and-test:
     jobs:
