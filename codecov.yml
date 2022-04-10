@@ -1,3 +1,4 @@
+secret: v1::p/xalHjaoM9p2oLqg2l2NIgU/1g65LeYpbBKr4u1DU1BEGOQRhNrzKO2BhX1bQJvwhmA67qhChdXMq77t93ZuQ==
 comment:                  # this is a top-level key
   layout: "reach, diff, flags, files"
   behavior: default
