@@ -61,7 +61,9 @@ export class ExtendedClient extends Client {
         eventFiles.forEach(async (filePath) => {
             console.log(filePath);
             const event: Event<keyof ClientEvents> = await this.importFile(filePath);
+
             console.log(event);
+            
             if (isNullOrUndefined(event)) {
                 return;
             }
