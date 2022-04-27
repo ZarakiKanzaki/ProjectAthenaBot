@@ -7,7 +7,7 @@ import { RegisterCommandOptions } from "../typings/RegisterCommandOptions";
 import { Event } from "./Event";
 
 const promise = promisify(glob);
-const DIRECTORY_OF_COMMANDS = `${__dirname}/../commands/*/*{.ts,.js}`;
+const DIRECTORY_OF_COMMANDS = `${__dirname}/../commands/**/*{.ts,.js}`;
 const DIRECTORY_OF_EVENTS = `${__dirname}/../events/*{.ts,.js}`;
 
 export class ExtendedClient extends Client {
@@ -82,7 +82,7 @@ export class ExtendedClient extends Client {
             console.log(command);
 
             this.commands.set(command.name, command);
-            if (slashCommands.some(a => a.name === command.name) === false) {
+            if (command.isInternal === false && slashCommands.some(a => a.name === command.name) === false) {
                 slashCommands.push(command);
             }
         });

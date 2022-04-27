@@ -4,6 +4,7 @@ declare global {
             botToken: string;
             guildId: string;
             environtment: "dev" | "prod" | "debug";
+            athenaBackend: string;
         }
     }
 }
