@@ -1,3 +1,5 @@
+import { removeElementFromListById } from "../common/Utility";
+
 export default class DataService {  
     private static instance?: DataService;  
     
@@ -10,6 +12,10 @@ export default class DataService {
         }  
         return DataService.instance;  
     }  
+
+    public  removeThemebookInProgress(themebook:any) {
+        DataService.instance.themebooksInProgress =  removeElementFromListById(DataService.instance.themebooksInProgress, themebook);
+    }
 
     public characters: any[] = [];
     public interactions: any[] = [];

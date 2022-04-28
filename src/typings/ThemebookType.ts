@@ -21,6 +21,7 @@ export type ThemebookType = {
     description: string;
     type: {
         name:string;
+        id: number;
     };
     themebookConcept: ThemebookConceptType;
     examplesOfApplication: string[];

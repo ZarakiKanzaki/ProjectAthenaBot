@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { CharacterType } from "../typings/CharacterType";
 
 export const themebookListQuery = gql`{
     themebooks {
@@ -12,8 +13,8 @@ export const themebookListQuery = gql`{
     }
   }`;
 
-export function getThemebookByKey(themebookId:string) {
-    return gql`{
+export function getThemebookByKey(themebookId: string) {
+  return gql`{
         themebook(themebookId: "${themebookId}") {
           id,
           name,
@@ -28,7 +29,8 @@ export function getThemebookByKey(themebookId:string) {
           },
           examplesOfApplication,
           type {
-            name
+            name,
+            id
           },
           identityMisteryOptions,
           titleExamples,
@@ -40,4 +42,18 @@ export function getThemebookByKey(themebookId:string) {
           },
         }
       }`;
+}
+
+export function createCharacter(character: CharacterType) {
+  return gql`mutation{
+    createCharacter(
+      character: ${convertToGraphQLobject(character)}
+    )
+  }`;
+}
+
+function convertToGraphQLobject(obj: any){
+  const objectString = JSON.stringify(obj);
+  const grapQLObject = objectString.replace(/"([^(")"]+)":/g,"$1:");
+  return grapQLObject;
 }

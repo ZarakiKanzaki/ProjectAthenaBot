@@ -4,7 +4,8 @@ import { ApplicationCommandOptionData } from "discord.js";
 import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 import { defineIdentityOrMistery, getThemebookId } from "../../common/Utility";
 import { Modal, showModal, TextInputComponent } from "discord-modals";
-import { TagQuestionType, ThemebookConceptType, ThemebookType } from "../../typings/ThemebookType";
+import { TagQuestionType, ThemebookType } from "../../typings/ThemebookType";
+import { ExtendedInteraction } from "../../typings/CommandType";
 
 const MIDDLE_DOT = ' · ';
 
@@ -24,14 +25,12 @@ export default new Command({
         const themebook: ThemebookType = dataService.themebooksInProgress.find(x => x.guildMember === interaction.user.id && x.themebook.id === themebookId).themebook;
         const character = dataService.characters.find(x => x.guildMember === interaction.user.id);
 
-        console.log(themebook);
-
-
-        let modalThemebook: Modal = getHeadOfModal(character, themebook);
+        let modalThemebook: Modal = getHeadOfModal(character, themebook, interaction);
 
         // handleTagQuestions(themebook, modalThemebook);
 
-
+        modalThemebook.addComponents(concatPowerTags());
+        modalThemebook.addComponents(concatWeaknessTags());
 
         modalThemebook.addComponents(identityMisteryText(themebook));
         modalThemebook.addComponents(titleText);
@@ -52,9 +51,50 @@ const titleText = new TextInputComponent()
     .setPlaceholder(`TITLE`)
     .setRequired(true);
 
-function getHeadOfModal(character: any, themebook: any): Modal {
+function concatWeaknessTags(): TextInputComponent {
+    return new TextInputComponent()
+        .setCustomId('weaknessTagQuestions')
+        .setLabel(`Weakness Tag`)
+        .setStyle('SHORT')
+        .setPlaceholder(`your weakness tag`)
+        .setRequired(true);
+}
+    
+
+function concatPowerTags(): TextInputComponent {
+    return new TextInputComponent()
+        .setCustomId('powerTagQuestions')
+        .setLabel(`Power Tag`)
+        .setStyle('SHORT')
+        .setPlaceholder(`Remember to separate each answer with an && symbol`)
+        .setRequired(true);
+}
+
+function getHeadOfModal(character: any, themebook: any, interaction: ExtendedInteraction): Modal {
+    const operationName = `character_${character.name}&&${character.mythos}&&${character.logos}`;
+    dataService.optionsToDeliver.push({
+      "guildMember": interaction.user.id,
+      "operation": operationName,
+      "arguments": [
+        {
+          "name": `complete-name`,
+          "type": "STRING",
+          "value": `${character.name}`,
+        },
+        {
+          "name": `mythos`,
+          "type": "STRING",
+          "value": `${character.mythos}`,
+        },
+        {
+          "name": `logos`,
+          "type": "STRING",
+          "value": `${character.logos}`,
+        }
+      ],
+    });
     return new Modal()
-        .setCustomId(`character_${character.name}&&${character.mythos}&&${character.logos}`)
+        .setCustomId(operationName)
         .setTitle(`${themebook.name}`)
         .addComponents(conceptQuestion(themebook));
 }
@@ -107,7 +147,7 @@ function textForPowerTag(index: number, tag: TagQuestionType): TextInputComponen
 function conceptQuestion(themebook: ThemebookType): TextInputComponent {
     return new TextInputComponent()
         .setCustomId('concept')
-        .setLabel(`${themebook.themebookConcept.question}`)
+        .setLabel(`CONCEPT`)
         .setStyle('SHORT')
         .setPlaceholder(`Write here your concept`)
         .setRequired(true);

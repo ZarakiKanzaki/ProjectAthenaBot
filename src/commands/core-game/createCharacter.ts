@@ -89,7 +89,9 @@ function sendFirstPartOfCharacter(interaction: ExtendedInteraction, characterNam
         "name": characterName,
         "logos": logos,
         "mythos": mythos,
+        "note":'',
         "themebooks": [],
+        "tags":[]
     };
 
     dataService.characters.push(interaction.character);
@@ -116,7 +118,7 @@ function BuildThemebookListMessage(embeddedMessages: MessageEmbed[], embeddedBut
 }
 
 function CreateMessageButtonForThemebook(themebook: any, interaction: ExtendedInteraction): MessageButton {
-    const operationName = "startThemebook";
+    const operationName = `startThemebook_${themebook.id}`;
     dataService.optionsToDeliver.push({
         "guildMember": interaction.user.id,
         "operation": operationName,
@@ -127,7 +129,7 @@ function CreateMessageButtonForThemebook(themebook: any, interaction: ExtendedIn
         }],
     });
     return new MessageButton()
-        .setCustomId(`${operationName}_${themebook.id}`)
+        .setCustomId(operationName)
         .setLabel(`${themebook.name}`)
         .setStyle('PRIMARY');
 }

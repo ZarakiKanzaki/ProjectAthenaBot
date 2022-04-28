@@ -14,7 +14,6 @@ export const client = new ExtendedClient();
 export const graphQL = new ApolloClient(opts);
 const dataService = DataService.getInstance();
 
-Object.freeze(dataService);
 export default dataService;
 
 discordModals(client);

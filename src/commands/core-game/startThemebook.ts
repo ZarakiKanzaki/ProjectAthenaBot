@@ -21,62 +21,64 @@ export default new Command({
     required: true,
   }] as ApplicationCommandOptionData[],
   run: async ({ interaction }) => {
-    // try {
+    try {
 
-    const themebookId: string = getThemebookId(interaction);
-    const themebook: ThemebookType = (await graphQL.query({ query: getThemebookByKey(themebookId) })).data.themebook;
-    const character = dataService.characters.find(x => x.guildMember === interaction.user.id);
-    dataService.themebooksInProgress.push({ "guildMember": interaction.user.id, themebook: themebook });
+      const themebookId: string = getThemebookId(interaction);
+      const themebook: ThemebookType = (await graphQL.query({ query: getThemebookByKey(themebookId) })).data.themebook;
+      const character = dataService.characters.find(x => x.guildMember === interaction.user.id);
+      dataService.themebooksInProgress.push({ "guildMember": interaction.user.id, themebook: themebook });
 
-    let themeboookMessage: MessageEmbed = buildMessage(themebook);
-    handleTagQuestions(themebook, themeboookMessage);
-    handleIdentityAndTitle(themeboookMessage, themebook);
 
-    const messageActionRow: MessageActionRow = new MessageActionRow()
-      .addComponents(
-        startButton(themebook, interaction),
-        backButton(character, interaction)
-      );
+      let themeboookMessage: MessageEmbed = buildMessage(themebook);
+      handleTagQuestions(themebook, themeboookMessage);
+      handleIdentityAndTitle(themeboookMessage, themebook);
 
-    await interaction.channel.messages.edit(interaction.channel.lastMessage, buildThemebookDetailMessage(themeboookMessage, messageActionRow));
-    await deferReply(interaction);
+      const messageActionRow: MessageActionRow = new MessageActionRow()
+        .addComponents(
+          startButton(themebook, interaction),
+          backButton(character, interaction)
+        );
 
-    // } catch (error) {
-    //   await interaction.reply(error);
-    // }
+      await interaction.channel.messages.edit(interaction.channel.lastMessage, buildThemebookDetailMessage(themeboookMessage, messageActionRow));
+      await deferReply(interaction);
+
+    } catch (error) {
+      await interaction.reply(error);
+    }
   }
 });
 
 function backButton(character: any, interaction: ExtendedInteraction) {
-  const operationName = "character";
+  const operationName = `character_${character.name}&&${character.mythos}&&${character.logos}`;
   dataService.optionsToDeliver.push({
     "guildMember": interaction.user.id,
     "operation": operationName,
-    "arguments": [{
-      "name": `complete-name`,
-      "type": "STRING",
-      "value": `${character.name}`,
-    },
-    {
-      "name": `mythos`,
-      "type": "STRING",
-      "value": `${character.mythos}`,
-    },
-    {
-      "name": `logos`,
-      "type": "STRING",
-      "value": `${character.logos}`,
-    }
+    "arguments": [
+      {
+        "name": `complete-name`,
+        "type": "STRING",
+        "value": `${character.name}`,
+      },
+      {
+        "name": `mythos`,
+        "type": "STRING",
+        "value": `${character.mythos}`,
+      },
+      {
+        "name": `logos`,
+        "type": "STRING",
+        "value": `${character.logos}`,
+      }
     ],
   });
   return new MessageButton()
-    .setCustomId(`character_${character.name}&&${character.mythos}&&${character.logos}`)
+    .setCustomId(operationName)
     .setLabel(`Go Back`)
     .setStyle('SECONDARY');
 }
 
 function startButton(themebook: ThemebookType, interaction: ExtendedInteraction) {
-  const operationName = "compileThemebook";
+  const operationName = `compileThemebook_${themebook.id}`;
   dataService.optionsToDeliver.push({
     "guildMember": interaction.user.id,
     "operation": operationName,
@@ -87,7 +89,7 @@ function startButton(themebook: ThemebookType, interaction: ExtendedInteraction)
     }],
   });
   return new MessageButton()
-    .setCustomId(`${operationName}_${themebook.id}`)
+    .setCustomId(operationName)
     .setLabel(`Start`)
     .setStyle('PRIMARY');
 }
