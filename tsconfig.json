@@ -16,5 +16,8 @@
         "importHelpers": true
     },
     "include": ["src", "environment.d.ts"],
-    "exclude": ["node_modules", "**/*.spec.ts"]
+    "exclude": ["node_modules", "**/*.spec.ts"],
+    "typeAcquisition": {
+        "include": ["jest"]
+    }
 }
