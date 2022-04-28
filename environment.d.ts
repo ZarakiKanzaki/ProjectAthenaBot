@@ -3,7 +3,8 @@ declare global {
         interface ProcessEnv {
             botToken: string;
             guildId: string;
-            environtment: "dev" | "prod" | "debug";
+            environment: "dev" | "prod" | "debug";
+            athenaBackend: string;
         }
     }
 }
