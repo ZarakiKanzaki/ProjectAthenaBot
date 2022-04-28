@@ -8,43 +8,48 @@ const util = require('util');
 const QUESTION_SEPARATOR = '&&';
 
 client.on('modalSubmit', async (interaction) => {
-    const themebook: ThemebookType = dataService.themebooksInProgress.find(x => x.guildMember === interaction.user.id).themebook;
-    let character: CharacterType = dataService.characters.find(x => x.guildMember === interaction.user.id);
-
-    const title = interaction.getTextInputValue('title');
-    const concept = interaction.getTextInputValue('concept');
-    const identityMistery = interaction.getTextInputValue('identityMistery');
-    const powerTagAnswers = interaction.getTextInputValue('powerTagQuestions').split(QUESTION_SEPARATOR);
-    const weaknessTagAnswers = interaction.getTextInputValue('weaknessTagQuestions').split(QUESTION_SEPARATOR);
-
-    let powerTags = [];
-    let weaknessTags = [];
-    let characterThemebook = {
-        "title": title,
-        "concept": concept,
-        "identityMistery": identityMistery,
-        "typeId": themebook.type.id,
-        "themebookId": themebook.id,
-        "flipside": '',
-        "fadeCrackLevel": 0,
-        "attentionLevel": 0,
-        "tags": [],
-    } as CharacterThemebookType;
-
-    handleTags(powerTagAnswers, powerTags, characterThemebook, themebook, weaknessTagAnswers, weaknessTags, character);
-    character.themebooks.push(characterThemebook);
-
-    dataService.removeThemebookInProgress(themebook);
-
-    if (character.themebooks.length === 4) {
-        try {
-            await submitCreateCharacter(character, interaction);
-        } catch (error) {
-            interaction.reply(`${error}`);
+    try {
+        const themebook: ThemebookType = dataService.themebooksInProgress.find(x => x.guildMember === interaction.user.id).themebook;
+        let character: CharacterType = dataService.characters.find(x => x.guildMember === interaction.user.id);
+    
+        const title = interaction.getTextInputValue('title');
+        const concept = interaction.getTextInputValue('concept');
+        const identityMistery = interaction.getTextInputValue('identityMistery');
+        const powerTagAnswers = interaction.getTextInputValue('powerTagQuestions').split(QUESTION_SEPARATOR);
+        const weaknessTagAnswers = interaction.getTextInputValue('weaknessTagQuestions').split(QUESTION_SEPARATOR);
+    
+        let powerTags = [];
+        let weaknessTags = [];
+        let characterThemebook = {
+            "title": title,
+            "concept": concept,
+            "identityMistery": identityMistery,
+            "typeId": themebook.type.id,
+            "themebookId": themebook.id,
+            "flipside": '',
+            "fadeCrackLevel": 0,
+            "attentionLevel": 0,
+            "tags": [],
+        } as CharacterThemebookType;
+    
+        handleTags(powerTagAnswers, powerTags, characterThemebook, themebook, weaknessTagAnswers, weaknessTags, character);
+        character.themebooks.push(characterThemebook);
+    
+        dataService.removeThemebookInProgress(themebook);
+    
+        if (character.themebooks.length === 4) {
+            try {
+                await submitCreateCharacter(character, interaction);
+            } catch (error) {
+                interaction.reply(`${error}`);
+            }
         }
-    }
-    else {
-        redirectToCommand(interaction);
+        else {
+            redirectToCommand(interaction);
+        }
+    } catch (error) {
+        interaction.reply(`${error}`);
+        
     }
 });
 
