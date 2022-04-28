@@ -20,26 +20,30 @@ export default new Command({
         required: true,
     }] as ApplicationCommandOptionData[],
     run: async ({ interaction }) => {
+        try {
+            const themebookId: string = getThemebookId(interaction);
+            const themebook: ThemebookType = dataService.themebooksInProgress.find(x => x.guildMember === interaction.user.id && x.themebook.id === themebookId).themebook;
+            const character = dataService.characters.find(x => x.guildMember === interaction.user.id);
 
-        const themebookId: string = getThemebookId(interaction);
-        const themebook: ThemebookType = dataService.themebooksInProgress.find(x => x.guildMember === interaction.user.id && x.themebook.id === themebookId).themebook;
-        const character = dataService.characters.find(x => x.guildMember === interaction.user.id);
+            let modalThemebook: Modal = getHeadOfModal(character, themebook, interaction);
 
-        let modalThemebook: Modal = getHeadOfModal(character, themebook, interaction);
+            // handleTagQuestions(themebook, modalThemebook);
 
-        // handleTagQuestions(themebook, modalThemebook);
+            modalThemebook.addComponents(concatPowerTags());
+            modalThemebook.addComponents(concatWeaknessTags());
 
-        modalThemebook.addComponents(concatPowerTags());
-        modalThemebook.addComponents(concatWeaknessTags());
-
-        modalThemebook.addComponents(identityMisteryText(themebook));
-        modalThemebook.addComponents(titleText);
+            modalThemebook.addComponents(identityMisteryText(themebook));
+            modalThemebook.addComponents(titleText);
 
 
-        showModal(modalThemebook, {
-            client: client,
-            interaction: interaction
-        });
+            showModal(modalThemebook, {
+                client: client,
+                interaction: interaction
+            });
+        } catch (error) {
+            await interaction.reply(error);
+        }
+
     }
 });
 
@@ -59,7 +63,7 @@ function concatWeaknessTags(): TextInputComponent {
         .setPlaceholder(`your weakness tag`)
         .setRequired(true);
 }
-    
+
 
 function concatPowerTags(): TextInputComponent {
     return new TextInputComponent()
@@ -73,25 +77,25 @@ function concatPowerTags(): TextInputComponent {
 function getHeadOfModal(character: any, themebook: any, interaction: ExtendedInteraction): Modal {
     const operationName = `character_${character.name}&&${character.mythos}&&${character.logos}`;
     dataService.optionsToDeliver.push({
-      "guildMember": interaction.user.id,
-      "operation": operationName,
-      "arguments": [
-        {
-          "name": `complete-name`,
-          "type": "STRING",
-          "value": `${character.name}`,
-        },
-        {
-          "name": `mythos`,
-          "type": "STRING",
-          "value": `${character.mythos}`,
-        },
-        {
-          "name": `logos`,
-          "type": "STRING",
-          "value": `${character.logos}`,
-        }
-      ],
+        "guildMember": interaction.user.id,
+        "operation": operationName,
+        "arguments": [
+            {
+                "name": `complete-name`,
+                "type": "STRING",
+                "value": `${character.name}`,
+            },
+            {
+                "name": `mythos`,
+                "type": "STRING",
+                "value": `${character.mythos}`,
+            },
+            {
+                "name": `logos`,
+                "type": "STRING",
+                "value": `${character.logos}`,
+            }
+        ],
     });
     return new Modal()
         .setCustomId(operationName)

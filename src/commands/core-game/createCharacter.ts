@@ -36,30 +36,30 @@ export default new Command({
     options: firstStepOptions,
     isInternal: false,
     run: async ({ interaction }) => {
-        // try {
+        try {
 
-        const character = dataService.characters.find(x => x.guildMember === interaction.user.id);
+            const character = dataService.characters.find(x => x.guildMember === interaction.user.id);
 
-        if (character?.themebooks?.length === 4) {
+            if (character?.themebooks?.length === 4) {
 
+            }
+            else if (isNullOrUndefined(character)) {
+                const characterName = interaction.options.getString('complete-name');
+                const logos = interaction.options.getString('logos');
+                const mythos = interaction.options.getString('mythos');
+
+                await handleMessageCreation(characterName, logos, mythos, interaction);
+            }
+            else {
+                const characterName = getOptionByName(interaction, 'complete-name');
+                const logos = getOptionByName(interaction, 'logos');
+                const mythos = getOptionByName(interaction, 'mythos');
+                await handleMessageCreation(characterName, logos, mythos, interaction);
+            }
+
+        } catch (error) {
+            await interaction.reply(error);
         }
-        else if (isNullOrUndefined(character)) {
-            const characterName = interaction.options.getString('complete-name');
-            const logos = interaction.options.getString('logos');
-            const mythos = interaction.options.getString('mythos');
-
-            await handleMessageCreation(characterName, logos, mythos, interaction);
-        }
-        else {
-            const characterName = getOptionByName(interaction, 'complete-name');
-            const logos = getOptionByName(interaction, 'logos');
-            const mythos = getOptionByName(interaction, 'mythos');
-            await handleMessageCreation(characterName, logos, mythos, interaction);
-        }
-
-        // } catch (error) {
-        //     await interaction.reply(error);
-        // }
     }
 });
 
@@ -76,7 +76,7 @@ async function handleMessageCreation(characterName: string, logos: string, mytho
     handleButtonAndEmbed(themebooks, embeddedMessages, embeddedButtons, interaction);
 
     sendFirstPartOfCharacter(interaction, characterName, logos, mythos);
-    
+
     dataService.interactions.push({ guildMember: interaction.user.id, options: interaction.options });
 
     await interaction.deferReply();
@@ -89,9 +89,9 @@ function sendFirstPartOfCharacter(interaction: ExtendedInteraction, characterNam
         "name": characterName,
         "logos": logos,
         "mythos": mythos,
-        "note":'',
+        "note": '',
         "themebooks": [],
-        "tags":[]
+        "tags": []
     };
 
     dataService.characters.push(interaction.character);
